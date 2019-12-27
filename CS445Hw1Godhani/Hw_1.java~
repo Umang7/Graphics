@@ -1,0 +1,126 @@
+/*
+Name : Umang Godhani
+Class : CS455
+*/
+
+import framebuffer.*;
+import framebuffer.FrameBuffer.Viewport;
+import java.awt.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class Hw_1
+{
+   public static void main(String[] args)
+   {
+      // Check for a file name on the command line.
+      if ( 0 == args.length )
+      {
+         System.err.println("Usage: java Hw_1 <PPM-file-name>");
+         System.exit(-1);
+      }
+
+      // This framebuffer holds the image that will be embedded
+      // within a viewport of our larger framebuffer.
+      FrameBuffer fbEmbedded = new FrameBuffer( args[0] );
+
+      /******************************************/
+
+      // Your code goes here.
+      FrameBuffer fb = new FrameBuffer(1000,600);//making new fb refrence to FrameBuffer object
+      // Create a framebuffer. Fill it with the checkerboard pattern. 
+     for (int Vertical = 0;  Vertical < 6;  Vertical++ ) 
+       {
+           for (int Horizontal = 0;  Horizontal < 10;  Horizontal++)
+           {
+             int Vert = Vertical * 100;
+             int Hori = Horizontal * 100;
+
+             // should be equal
+             if ( (Vertical % 2) == (Horizontal % 2) )
+
+               for(int i=0; i<100; i++)
+             {
+               for (int j=0; j<100;j++)
+               {
+                fb.setPixelFB(Hori,Vert,new Color(255,189,96));//setting the darker sqaures
+                Hori++;
+               } 
+              Hori=Hori-100;
+              Vert++;
+              }
+             else
+                for(int i=0; i<100; i++)
+             {
+               for (int j=0; j<100;j++)
+               {
+                fb.setPixelFB(Hori,Vert,new Color(192,56,14));//setting the darker sqaures
+                Hori++;
+               } 
+              Hori=Hori-100;
+              Vert++;
+            }
+          }
+     }
+      // Create a viewport to hold the given PPM file. Put the PPM file in the viewport.
+     FrameBuffer.Viewport vpfirstTrooper = fb.new Viewport(75,125,"RebelTrooper.ppm");//trooper one
+        
+      // Create another viewport and fill it with a flipped copy of the PPM file.
+     FrameBuffer.Viewport vpsecondTrooper = fb.new Viewport(331,125,256,256);
+    
+     for (int i = 0; i < 256; i++)
+        for(int j = 0; j < 256; j++)
+         {
+            vpsecondTrooper.setPixelVP(255-i, j, vpfirstTrooper.getPixelVP(i,j) );  // flipping second trooper
+       }
+     
+      // Create another viewport and fill it with the striped pattern.
+   //  610,420,910,540,30
+         FrameBuffer.Viewport vpStripes= fb.new Viewport(610,420,300,120);
+         
+         for (int i=0; i <300 ;  i++)
+         {
+           for (int j=0; j <120; j++)
+           {
+            int pixelCounter = i+j;   //weird but working way to findout which color goes where
+            if ((pixelCounter/30)%3==0)
+           vpStripes.setPixelVP(i,j,new Color(241,95,116));// pinkish
+            else if ((pixelCounter/30)%3==1)
+           vpStripes.setPixelVP(i,j,new Color (152,203,74));// greenish
+            else
+           vpStripes.setPixelVP(i,j,new Color (84,129,230));// blueish
+           }
+         }
+
+      // Create another viewport that coHorizontals the selected region of the framebuffer.
+         //725,25,250,350
+           FrameBuffer.Viewport vpGraySpace= fb.new Viewport(725,25,250,350);
+            for (int i = 0; i < 250; i++)
+        for(int j = 0; j < 350; j++)
+         {
+            vpGraySpace.setPixelVP(i, j, new Color (192,192,192) );  //filling with color
+       }
+      // Create another viewport to hold a copy of the selected region.
+             //750,50 starting point
+             FrameBuffer.Viewport vpSpecialP= fb.new Viewport(750,50,200,300);
+      
+      // Create another viewport inside the last one.
+           for(int i=0;i<200;i++)
+             for(int j=0;j<300;j++)
+           {
+            vpSpecialP.setPixelVP(i,j,fb.getPixelFB(500+i,200+j)) ;
+           }
+            
+      // Copy the selected region's viewport into this last viewport.
+
+    //  FrameBuffer fb = null;
+
+
+      /******************************************/
+      // Save the resulting image in a file.
+      String savedFileName = "Hw_1.ppm";
+      fb.dumpFB2File( savedFileName );
+      System.err.println("Saved " + savedFileName);
+   }
+}
+
